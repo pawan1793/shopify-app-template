@@ -50,7 +50,7 @@ shopify-app-template/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/shopify-app-template.git
+git clone https://github.com/pawan1793/shopify-app-template.git
 cd shopify-app-template
 ```
 
