@@ -4,7 +4,7 @@ This repository contains a starter template for building a Shopify app with a La
 
 ## 🧰 Stack
 
-- **Backend**: Laravel 11
+- **Backend**: Laravel 12
 - **Frontend**: Shopify Remix (using App Bridge + Polaris)
 - **API Communication**: REST API between Laravel and Remix frontend
 - **Authentication**: OAuth with Shopify
@@ -12,6 +12,8 @@ This repository contains a starter template for building a Shopify app with a La
 ---
 
 ## 📁 Project Structure
+
+The project is currently in its initial setup phase. The following structure will be implemented:
 
 ```
 shopify-app-template/
@@ -94,9 +96,6 @@ Update both `.env` and frontend `shopify.ts` with the HTTPS Ngrok URL.
 ## 🔐 Shopify OAuth Flow
 
 1. Merchant installs the app from the Shopify store.
-
-### 3. Frontend Remix Setup
-
 2. Redirects to Laravel backend for OAuth.
 3. Laravel verifies and stores access token.
 4. Merchant is redirected to the Remix app with authenticated session.
@@ -142,7 +141,7 @@ docker-compose up --build
 
 - [Shopify App CLI](https://shopify.dev/docs/apps/tools/cli)
 - [Laravel Docs](https://laravel.com/docs)
-- [Remix Shopify Starter](https://github.com/Shopify/remix-app-template)
+- [Remix Shopify Starter](https://github.com/Shopify/shopify-app-template-remix)
 
 ---
 
