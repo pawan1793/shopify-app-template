@@ -3,11 +3,12 @@
 client_id = "c7e923f8f1e3bb90b66765fa37af079d"
 name = "thalia-app-template"
 handle = "thalia-app-template"
-application_url = "https://example.com/"
+application_url = "https://iran-france-shortly-twisted.trycloudflare.com"
 embedded = true
 
 [build]
 include_config_on_deploy = true
+automatically_update_urls_on_dev = true
 
 [webhooks]
 api_version = "2025-04"
@@ -25,7 +26,11 @@ api_version = "2025-04"
 scopes = "write_products"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [
+  "https://iran-france-shortly-twisted.trycloudflare.com/auth/callback",
+  "https://iran-france-shortly-twisted.trycloudflare.com/auth/shopify/callback",
+  "https://iran-france-shortly-twisted.trycloudflare.com/api/auth/callback"
+]
 
 [pos]
 embedded = false

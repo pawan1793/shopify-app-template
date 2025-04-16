@@ -6,11 +6,22 @@ import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 
 import { authenticate } from "../shopify.server";
+import { laravelAuth } from "../lib/laravelAuth";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  // Authenticate with Shopify first
   await authenticate.admin(request);
+
+  try {
+    // Try to authenticate with Laravel backend
+    await laravelAuth.makeAuthenticatedRequest('/user');
+  } catch (error) {
+    console.error('Laravel authentication error:', error);
+    // We don't throw here since we want the app to continue loading
+    // The laravelAuth module will handle token refresh automatically on subsequent requests
+  }
 
   return { apiKey: process.env.SHOPIFY_API_KEY || "" };
 };
