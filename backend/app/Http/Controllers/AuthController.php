@@ -35,3 +35,9 @@ class AuthController extends Controller
             ];
 
             return response()->json(['products' => $products]);
+        }
+        
+        // User not authenticated
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+}
