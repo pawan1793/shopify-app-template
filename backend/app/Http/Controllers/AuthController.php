@@ -4,34 +4,52 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function authenticate(Request $request)
+    public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $user = User::where('email', $request->email)->first();
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            return response()->json(['token' => $token, 'message' => 'Authentication successful']);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
         }
 
-        return response()->json(['message' => 'Invalid Login credentials'], 401);
+        $user = Auth::user();
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
+            'token' => $token,
+        ]);
     }
 
-    public function products(Request $request)
+    public function logout(Request $request)
     {
-        // Check if the user is authenticated using Sanctum
-        if ($request->user()) {
-            $products = [
-                ['id' => 1, 'name' => 'Product 1'],
-                ['id' => 2, 'name' => 'Product 2'],
-            ];
+        $request->user()->currentAccessToken()->delete();
+        return response()->json(['message' => 'Logged out successfully']);
+    }
 
-            return response()->json(['products' => $products]);
+    public function user(Request $request)
+    {
+        return response()->json([
+            'user' => [
+                'id' => $request->user()->id,
+                'name' => $request->user()->name,
+                'email' => $request->user()->email,
+            ]
+        ]);
+    }
+}
+
