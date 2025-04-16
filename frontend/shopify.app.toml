@@ -3,7 +3,7 @@
 client_id = "c7e923f8f1e3bb90b66765fa37af079d"
 name = "thalia-app-template"
 handle = "thalia-app-template"
-application_url = "https://iran-france-shortly-twisted.trycloudflare.com"
+application_url = "https://plastic-accordingly-generation-lights.trycloudflare.com"
 embedded = true
 
 [build]
@@ -27,9 +27,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://iran-france-shortly-twisted.trycloudflare.com/auth/callback",
-  "https://iran-france-shortly-twisted.trycloudflare.com/auth/shopify/callback",
-  "https://iran-france-shortly-twisted.trycloudflare.com/api/auth/callback"
+  "https://plastic-accordingly-generation-lights.trycloudflare.com/auth/callback",
+  "https://plastic-accordingly-generation-lights.trycloudflare.com/auth/shopify/callback",
+  "https://plastic-accordingly-generation-lights.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

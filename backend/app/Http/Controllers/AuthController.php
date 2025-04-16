@@ -10,19 +10,36 @@ class AuthController extends Controller
 {
     public function authenticate(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+        // Validate shop and id from Shopify session
+        $request->validate([
+            'shop' => 'required|string',
+            'id' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $user = User::where('email', $request->email)->first();
-            $token = $user->createToken('auth_token')->plainTextToken;
+        // Find or create a user based on the Shopify shop domain
+        $user = User::firstOrCreate(
+            ['email' => $request->shop], // Using shop as the unique identifier
+            ['name' => $request->shop, 'password' => bcrypt($request->id)] // Use id as a password equivalent
+        );
 
-            return response()->json(['token' => $token, 'message' => 'Authentication successful']);
+        $session = Session::where('shop', $request->shop)->first();
+        if (!$session) {
+            return response()->json(['message' => 'Session not found'], 404);
         }
+        
+        // Update access_token in User table
+        $user->access_token = $session->accessToken;
+        $user->save();
 
-        return response()->json(['message' => 'Invalid Login credentials'], 401);
+        // Create token for the user
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'expires_in' => 60 * 24 * 30, // 30 days in minutes
+            'message' => 'Authentication successful'
+        ]);
     }
 
     public function products(Request $request)
@@ -35,6 +52,21 @@ class AuthController extends Controller
             ];
 
             return response()->json(['products' => $products]);
+        }
+        
+        // User not authenticated
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    public function user(Request $request)
+    {
+        // Check if the user is authenticated using Sanctum
+        if ($user = $request->user()) {
+            // Return authenticated user data
+            return response()->json([
+                'user' => $user,
+                'message' => 'User data retrieved successfully'
+            ]);
         }
         
         // User not authenticated

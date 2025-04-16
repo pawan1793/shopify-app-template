@@ -38,18 +38,25 @@ export class LaravelAuth {
 
   private async refreshToken(): Promise<string> {
     try {
+      // Get the session to retrieve shop and id
+      const session = await db.session.findFirst();
+      
+      if (!session || !session.shop || !session.id) {
+        throw new Error('No valid session found ');
+      }
+      
       const response = await fetch(`${this.baseUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          // Add your login credentials here
-          email: process.env.LARAVEL_API_EMAIL,
-          password: process.env.LARAVEL_API_PASSWORD,
+          // Pass shop and id from session instead of email/password
+          shop: session.shop,
+          id: session.id,
         }),
       });
-
+   
       if (!response.ok) {
         throw new Error('Failed to refresh token');
       }
@@ -79,6 +86,7 @@ export class LaravelAuth {
             ...options.headers,
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
           },
         });
 
@@ -90,6 +98,11 @@ export class LaravelAuth {
         }
 
         if (!response.ok) {
+          console.log("===============================")
+        console.log(this.baseUrl)
+        console.log(endpoint)
+        console.log("==============================")
+        
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -107,4 +120,4 @@ export class LaravelAuth {
 }
 
 // Export a singleton instance
-export const laravelAuth = LaravelAuth.getInstance(); 
+export const laravelAuth = LaravelAuth.getInstance();
