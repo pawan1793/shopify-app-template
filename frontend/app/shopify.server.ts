@@ -8,10 +8,12 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
 
-export const BASIC_PLAN = 'Basic Plan';
-export const PRO_PLAN = 'Pro Plan';
-export const ANNUAL_PLAN = 'Annual Plan';
-export const CREDIT_PACKAGE = 'Credit Package';
+export type BillingPlan = 'Basic Plan' | 'Pro Plan' | 'Annual Plan' | 'Credit Package';
+
+export const BASIC_PLAN: BillingPlan = 'Basic Plan';
+export const PRO_PLAN: BillingPlan = 'Pro Plan';
+export const ANNUAL_PLAN: BillingPlan = 'Annual Plan';
+export const CREDIT_PACKAGE: BillingPlan = 'Credit Package';
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -39,7 +41,7 @@ const shopify = shopifyApp({
       interval: BillingInterval.Annual,
     },
     [CREDIT_PACKAGE]: {
-      amount: 20,
+      amount: 1, // Base price per credit
       currencyCode: 'USD',
       interval: BillingInterval.OneTime,
     },

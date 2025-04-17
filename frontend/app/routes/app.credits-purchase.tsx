@@ -1,5 +1,5 @@
 import { redirect } from "@remix-run/node";
-import { authenticate, BASIC_PLAN, ANNUAL_PLAN, PRO_PLAN } from "../shopify.server";
+import { authenticate, CREDIT_PACKAGE } from "../shopify.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -8,21 +8,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   let myShop = shop.replace(".myshopify.com", "");
 
   const url = new URL(request.url);
-  const plan = url.searchParams.get('creditamount');
-  console.log(plan);
-  let selectedplan = "MONTHLY_PLAN";
-  if(plan == "BASIC_PLAN"){
-    selectedplan = BASIC_PLAN;
-  }else if(plan == "ANNUAL_PLAN"){
-    selectedplan = ANNUAL_PLAN;
-  }else if(plan == "PRO_PLAN"){
-    selectedplan = PRO_PLAN;
-  }
+  const creditamount = url.searchParams.get('creditamount');
+  console.log(creditamount);
+ 
+  console.log(CREDIT_PACKAGE);
 
   await billing.require({
-    plans: [selectedplan],
+    plans: [CREDIT_PACKAGE],
     onFailure: async () => billing.request({
-      plan: selectedplan,
+      plan: CREDIT_PACKAGE,
+      amount: creditamount,
       isTest: true,
       returnUrl: `https://admin.shopify.com/store/${myShop}/apps/${process.env.APP_NAME}/app/plans`,
     }),
