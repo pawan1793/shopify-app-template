@@ -1056,16 +1056,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v12.9.0",
+            "version": "v12.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "d413f9e297b62238c6c633c082f8f45a888e31b6"
+                "reference": "7c201749cc4b463eea1b58698f5fb4f4c09dc32b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/d413f9e297b62238c6c633c082f8f45a888e31b6",
-                "reference": "d413f9e297b62238c6c633c082f8f45a888e31b6",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/7c201749cc4b463eea1b58698f5fb4f4c09dc32b",
+                "reference": "7c201749cc4b463eea1b58698f5fb4f4c09dc32b",
                 "shasum": ""
             },
             "require": {
@@ -1267,7 +1267,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-04-15T15:36:35+00:00"
+            "time": "2025-04-16T12:02:03+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -5515,6 +5515,49 @@
             "time": "2025-01-17T11:39:41+00:00"
         },
         {
+            "name": "thalia/shopify-rest-to-graphql",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pawan1793/shopify-rest-to-graphql.git",
+                "reference": "267b83fa365d5b7bf9a91f3c438c903d04e89ac3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pawan1793/shopify-rest-to-graphql/zipball/267b83fa365d5b7bf9a91f3c438c903d04e89ac3",
+                "reference": "267b83fa365d5b7bf9a91f3c438c903d04e89ac3",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": ">=7.5",
+                "php": ">=7.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "App\\": "app/",
+                    "Thalia\\ShopifyRestToGraphql\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Pawan More",
+                    "email": "pawanmore38@gmail.com"
+                }
+            ],
+            "description": "Shopify REST to GraphQL : Converts Shopify REST API payloads to GraphQL queries with minimal changes for seamless Laravel integration.",
+            "support": {
+                "issues": "https://github.com/pawan1793/shopify-rest-to-graphql/issues",
+                "source": "https://github.com/pawan1793/shopify-rest-to-graphql/tree/main"
+            },
+            "time": "2025-04-15T06:16:10+00:00"
+        },
+        {
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "v2.3.0",
             "source": {
@@ -8066,7 +8109,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "thalia/shopify-rest-to-graphql": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
