@@ -7,36 +7,44 @@ import {
   Page,
   Text,
   BlockStack,
+  DataTable,
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
+import { useLoaderData } from "@remix-run/react";
+import { ProductResponse, getProductData } from "../lib/product.server";
+import { authenticate } from "../shopify.server";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import db from "../db.server";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { session } = await authenticate.admin(request);
+  const productData = await getProductData(request);
+  return { productData, shop: session.shop };
+};
 
 export default function AdditionalPage() {
+  const { productData, shop } = useLoaderData<typeof loader>();
+
+  const rows = productData?.products.map((product) => [
+    product.id.toString(),
+    product.name,
+    product.description || '',
+    `$${product.price}`
+  ]) || [];
+
   return (
     <Page>
-      <TitleBar title="Additional page" />
+      <TitleBar title={`Products - ${shop}`} />
       <Layout>
         <Layout.Section>
           <Card>
-            <BlockStack gap="300">
-              <Text as="p" variant="bodyMd">
-                The app template comes with an additional page which
-                demonstrates how to create multiple pages within app navigation
-                using{" "}
-                <Link
-                  url="https://shopify.dev/docs/apps/tools/app-bridge"
-                  target="_blank"
-                  removeUnderline
-                >
-                  App Bridge
-                </Link>
-                .
-              </Text>
-              <Text as="p" variant="bodyMd">
-                To create your own page and have it show up in the app
-                navigation, add a page inside <Code>app/routes</Code>, and a
-                link to it in the <Code>&lt;NavMenu&gt;</Code> component found
-                in <Code>app/routes/app.jsx</Code>.
-              </Text>
+            <BlockStack gap="400">
+              <Text as="h2" variant="headingMd">Current Shop: {shop}</Text>
+              <DataTable
+                columnContentTypes={['text', 'text', 'text', 'text']}
+                headings={['ID', 'Name', 'Description', 'Price']}
+                rows={rows}
+              />
             </BlockStack>
           </Card>
         </Layout.Section>

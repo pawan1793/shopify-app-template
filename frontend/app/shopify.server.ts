@@ -3,9 +3,17 @@ import {
   ApiVersion,
   AppDistribution,
   shopifyApp,
+  BillingInterval,
 } from "@shopify/shopify-app-remix/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
+
+export type BillingPlan = 'Basic Plan' | 'Pro Plan' | 'Annual Plan' | 'Credit Package';
+
+export const BASIC_PLAN: BillingPlan = 'Basic Plan';
+export const PRO_PLAN: BillingPlan = 'Pro Plan';
+export const ANNUAL_PLAN: BillingPlan = 'Annual Plan';
+export const CREDIT_PACKAGE: BillingPlan = 'Credit Package';
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -16,6 +24,29 @@ const shopify = shopifyApp({
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,
+  billing: {
+    [BASIC_PLAN]: {
+      amount: 10,
+      currencyCode: 'USD',
+      interval: BillingInterval.Every30Days,
+    },
+    [PRO_PLAN]: {
+      amount: 50,
+      currencyCode: 'USD',
+      interval: BillingInterval.Every30Days,
+    },
+    [ANNUAL_PLAN]: {
+      amount: 100,
+      currencyCode: 'USD',
+      interval: BillingInterval.Annual,
+    },
+    [CREDIT_PACKAGE]: {
+      amount: 1, // Base price per credit
+      currencyCode: 'USD',
+      interval: BillingInterval.OneTime,
+    },
+  },
+  
   future: {
     unstable_newEmbeddedAuthStrategy: true,
     removeRest: true,

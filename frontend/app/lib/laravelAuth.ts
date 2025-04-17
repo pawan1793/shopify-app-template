@@ -1,9 +1,17 @@
+import { authenticate } from "../shopify.server";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import db from "../db.server";
 
 interface LaravelAuthResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
+}
+
+interface SessionWithLaravelToken {
+  id: string;
+  shop: string;
+  laravelToken?: string;
 }
 
 export class LaravelAuth {
@@ -21,13 +29,16 @@ export class LaravelAuth {
     return LaravelAuth.instance;
   }
 
-  private async getLaravelToken(): Promise<string | null> {
-    const session = await db.session.findFirst();
-    return session?.laravelToken || null;
+  private async getLaravelToken(request: LoaderFunctionArgs['request']): Promise<string | null> {
+    const { session } = await authenticate.admin(request);
+    const dbSession = await db.session.findUnique({
+      where: { id: session.id }
+    });
+    return dbSession?.laravelToken || null;
   }
 
-  private async setLaravelToken(token: string): Promise<void> {
-    const session = await db.session.findFirst();
+  private async setLaravelToken(request: LoaderFunctionArgs['request'], token: string): Promise<void> {
+    const { session } = await authenticate.admin(request);
     if (session) {
       await db.session.update({
         where: { id: session.id },
@@ -36,26 +47,33 @@ export class LaravelAuth {
     }
   }
 
-  private async refreshToken(): Promise<string> {
+  private async refreshToken(request: LoaderFunctionArgs['request']): Promise<string> {
     try {
+      const { session } = await authenticate.admin(request);
+      console.log("===============================")
+      console.log(session)
+      console.log("==============================")
+      if (!session || !session.shop || !session.id) {
+        throw new Error('No valid session found');
+      }
+      
       const response = await fetch(`${this.baseUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          // Add your login credentials here
-          email: process.env.LARAVEL_API_EMAIL,
-          password: process.env.LARAVEL_API_PASSWORD,
+          shop: session.shop,
+          id: session.id,
         }),
       });
-
+   
       if (!response.ok) {
         throw new Error('Failed to refresh token');
       }
 
       const data: LaravelAuthResponse = await response.json();
-      await this.setLaravelToken(data.access_token);
+      await this.setLaravelToken(request, data.access_token);
       return data.access_token;
     } catch (error) {
       console.error('Error refreshing token:', error);
@@ -65,9 +83,10 @@ export class LaravelAuth {
 
   public async makeAuthenticatedRequest<T>(
     endpoint: string,
+    request: LoaderFunctionArgs['request'],
     options: RequestInit = {}
   ): Promise<T> {
-    let token = await this.getLaravelToken();
+    let token = await this.getLaravelToken(request);
     let retryCount = 0;
     const maxRetries = 1;
 
@@ -79,12 +98,12 @@ export class LaravelAuth {
             ...options.headers,
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
           },
         });
 
         if (response.status === 401 && retryCount < maxRetries) {
-          // Token expired, try to refresh
-          token = await this.refreshToken();
+          token = await this.refreshToken(request);
           retryCount++;
           continue;
         }
@@ -106,5 +125,4 @@ export class LaravelAuth {
   }
 }
 
-// Export a singleton instance
-export const laravelAuth = LaravelAuth.getInstance(); 
+export const laravelAuth = LaravelAuth.getInstance();
