@@ -18,7 +18,7 @@ import db from "../db.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
-  const productData = await getProductData();
+  const productData = await getProductData(request);
   return { productData, shop: session.shop };
 };
 
@@ -29,7 +29,7 @@ export default function AdditionalPage() {
     product.id.toString(),
     product.name,
     product.description || '',
-    `$${product.price.toFixed(2)}`
+    `$${product.price}`
   ]) || [];
 
   return (

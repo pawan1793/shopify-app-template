@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
@@ -15,7 +16,7 @@ class ProductController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+        
     }
 
     /**
@@ -27,7 +28,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+        \Log::info($user);
         // Retrieve only products belonging to the authenticated user
         $products = Product::where('user_id', $user->id)->get();
         

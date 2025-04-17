@@ -1,4 +1,5 @@
 import { laravelAuth } from "./laravelAuth";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 export interface UserData {
   user: {
@@ -13,9 +14,9 @@ export interface UserData {
   message: string;
 }
 
-export async function getUserData(): Promise<UserData | null> {
+export async function getUserData(request: LoaderFunctionArgs['request']): Promise<UserData | null> {
   try {
-    const userData = await laravelAuth.makeAuthenticatedRequest<UserData>('/user');
+    const userData = await laravelAuth.makeAuthenticatedRequest<UserData>('/user', request);
     console.log('User Data:', userData);
     return userData;
   } catch (error) {

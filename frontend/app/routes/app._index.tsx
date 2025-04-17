@@ -1,74 +1,92 @@
-import { useEffect } from "react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import {
   Page,
   Layout,
   Text,
   Card,
-  Button,
   BlockStack,
-  Box,
-  List,
-  Link,
   InlineStack,
+  Badge,
 } from "@shopify/polaris";
-import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
+import { TitleBar } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { getUserData, UserData } from "../lib/user.server";
 
 interface LoaderData {
   userData: UserData | null;
+  shop: string;
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
-  const userData = await getUserData();
-  return { userData };
+  const { session } = await authenticate.admin(request);
+  const userData = await getUserData(request);
+  return { shop: session.shop, userData };
 };
 
 export default function Index() {
-  const shopify = useAppBridge();
-  const { userData } = useLoaderData<LoaderData>();
-
-  function generateToast(content: string) {
-    shopify.toast.show(content);
-  }
+  const { userData, shop } = useLoaderData<LoaderData>();
 
   return (
     <Page>
-      <TitleBar title="Thalia App Template">
-      </TitleBar>
+      <TitleBar title={`Dashboard - ${shop}`} />
       <BlockStack gap="500">
         <Layout>
-          <Layout.Section>
+          <Layout.Section variant="oneHalf">
             <Card>
-              {userData ? (
-                <BlockStack gap="400">
-                  <Text variant="headingMd" as="h2">User Details</Text>
-                  <Text as="p">Name: {userData.user.name}</Text>
-                  <Text as="p">Email: {userData.user.email}</Text>
-                  <Text as="p">Shop ID: {userData.user.id}</Text>
-                  <Text as="p">Created: {new Date(userData.user.created_at).toLocaleDateString()}</Text>
-                  {userData.user.email_verified_at && (
-                    <Text as="p">Email Verified: {new Date(userData.user.email_verified_at).toLocaleDateString()}</Text>
-                  )}
-                </BlockStack>
-              ) : (
-                <Text as="p">Failed to load user data</Text>
-              )}
-              <Button onClick={() => generateToast('test toatsttt')}>Test</Button>
+              <BlockStack gap="400">
+                <Text as="h2" variant="headingMd">Shop Overview</Text>
+                <InlineStack gap="400">
+                  <Card>
+                    <BlockStack gap="200">
+                      <Text as="p" variant="bodySm">Total Products</Text>
+                      <Text as="h2" variant="headingXl">24</Text>
+                      <Badge tone="success">+12%</Badge>
+                    </BlockStack>
+                  </Card>
+                  <Card>
+                    <BlockStack gap="200">
+                      <Text as="p" variant="bodySm">Active Users</Text>
+                      <Text as="h2" variant="headingXl">156</Text>
+                      <Badge tone="success">+8%</Badge>
+                    </BlockStack>
+                  </Card>
+                </InlineStack>
+              </BlockStack>
             </Card>
           </Layout.Section>
-          <Layout.Section variant="oneThird">
-            <BlockStack gap="500">
-              <Card>
-               
-              </Card>
-              <Card>
-               
-              </Card>
-            </BlockStack>
+          <Layout.Section variant="oneHalf">
+            <Card>
+              <BlockStack gap="400">
+                <Text as="h2" variant="headingMd">Recent Activity</Text>
+                <BlockStack gap="200">
+                  <InlineStack align="space-between">
+                    <Text as="p">New product added</Text>
+                    <Text as="p" variant="bodySm">2 hours ago</Text>
+                  </InlineStack>
+                  <InlineStack align="space-between">
+                    <Text as="p">User login</Text>
+                    <Text as="p" variant="bodySm">4 hours ago</Text>
+                  </InlineStack>
+                  <InlineStack align="space-between">
+                    <Text as="p">Order processed</Text>
+                    <Text as="p" variant="bodySm">6 hours ago</Text>
+                  </InlineStack>
+                </BlockStack>
+              </BlockStack>
+            </Card>
+          </Layout.Section>
+          <Layout.Section>
+            <Card>
+              <BlockStack gap="400">
+                <Text as="h2" variant="headingMd">System Status</Text>
+                <InlineStack gap="400">
+                  <Badge tone="success">API Connected</Badge>
+                  <Badge tone="success">Database Online</Badge>
+                  <Badge tone="success">Sync Active</Badge>
+                </InlineStack>
+              </BlockStack>
+            </Card>
           </Layout.Section>
         </Layout>
       </BlockStack>

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PlanController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 
@@ -30,4 +31,8 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // User routes
     Route::get('/user', [AuthController::class, 'user']);
+
+    // Plan routes
+    Route::get('/plans', [PlanController::class, 'getPlans']);
+    Route::post('/plans/{planId}/subscribe', [PlanController::class, 'subscribe']);
 });

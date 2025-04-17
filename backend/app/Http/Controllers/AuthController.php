@@ -15,7 +15,7 @@ class AuthController extends Controller
             'shop' => 'required|string',
             'id' => 'required|string',
         ]);
-
+        \Log::info($request->all());
         // Find or create a user based on the Shopify shop domain
         $user = User::firstOrCreate(
             ['email' => $request->shop], // Using shop as the unique identifier
@@ -42,24 +42,11 @@ class AuthController extends Controller
         ]);
     }
 
-    public function products(Request $request)
-    {
-        // Check if the user is authenticated using Sanctum
-        if ($request->user()) {
-            $products = [
-                ['id' => 1, 'name' => 'Product 1'],
-                ['id' => 2, 'name' => 'Product 2'],
-            ];
-
-            return response()->json(['products' => $products]);
-        }
-        
-        // User not authenticated
-        return response()->json(['message' => 'Unauthorized'], 401);
-    }
-
+   
     public function user(Request $request)
     {
+
+        \Log::info($request->all());
         // Check if the user is authenticated using Sanctum
         if ($user = $request->user()) {
             // Return authenticated user data
