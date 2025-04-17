@@ -30,11 +30,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function Index() {
     const { shop } = useLoaderData<LoaderData>();
     const [creditAmount, setCreditAmount] = useState<string>("100");
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<boolean>(false);
 
     const handleCreditAmountChange = (value: string) => {
         setCreditAmount(value);
-        setError(null);
+        setError(false);
     };
 
     const calculatePrice = (credits: number) => {

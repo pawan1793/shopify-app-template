@@ -1,5 +1,5 @@
 import { redirect } from "@remix-run/node";
-import { authenticate, CREDIT_PACKAGE } from "../shopify.server";
+import { authenticate, CREDIT_PACKAGE, CREDIT_PACKAGE } from "../shopify.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -11,18 +11,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const creditamount = url.searchParams.get('creditamount');
   console.log(creditamount);
  
-  console.log(CREDIT_PACKAGE);
 
-  await billing.require({
-    plans: [CREDIT_PACKAGE],
-    onFailure: async () => billing.request({
-      plan: CREDIT_PACKAGE,
-      amount: creditamount,
-      isTest: true,
-      returnUrl: `https://admin.shopify.com/store/${myShop}/apps/${process.env.APP_NAME}/app/plans`,
-    }),
-  });
-
+  await billing.request({
+    plan: CREDIT_PACKAGE,
+    isTest: true,
+    prorate: true,
+    amount: creditamount,
+    returnUrl: `https://admin.shopify.com/store/${myShop}/apps/${process.env.APP_NAME}/app/plans`,
+  })
+ 
 
   return null;
 };

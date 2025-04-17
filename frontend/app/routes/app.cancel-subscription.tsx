@@ -3,31 +3,21 @@ import { authenticate, BASIC_PLAN, ANNUAL_PLAN, PRO_PLAN } from "../shopify.serv
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { billing, session } = await authenticate.admin(request);
-  let { shop } = session;
-  let myShop = shop.replace(".myshopify.com", "");
-
-  const url = new URL(request.url);
-  const plan = url.searchParams.get('creditamount');
-  console.log(plan);
-  let selectedplan = "MONTHLY_PLAN";
-  if(plan == "BASIC_PLAN"){
-    selectedplan = BASIC_PLAN;
-  }else if(plan == "ANNUAL_PLAN"){
-    selectedplan = ANNUAL_PLAN;
-  }else if(plan == "PRO_PLAN"){
-    selectedplan = PRO_PLAN;
-  }
-
-  await billing.require({
-    plans: [selectedplan],
-    onFailure: async () => billing.request({
-      plan: selectedplan,
-      isTest: true,
-      returnUrl: `https://admin.shopify.com/store/${myShop}/apps/${process.env.APP_NAME}/app/plans`,
-    }),
+  const { billing } = await authenticate.admin(request);
+  const billingCheck = await billing.require({
+    plans: [BASIC_PLAN, ANNUAL_PLAN, PRO_PLAN],
+    onFailure: () => {
+        throw new Error('No active plan');
+    },
   });
 
+  const subscription = billingCheck.appSubscriptions[0];
+  const cancelledSubscription = await billing.cancel({
+    subscriptionId: subscription.id,
+    isTest: true,
+    prorate: true,
+   });
 
-  return null;
+  // App logic
+   return redirect("/app/plans");
 };

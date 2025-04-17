@@ -21,7 +21,7 @@ class PlanController extends Controller
                 "url"=>"/app/upgrade",
                 'features' => ['Feature 1', 'Feature 2'],
                 'description' => 'Basic plan for small businesses',
-                'shopify_plan_id' => 'MONTHLY_PLAN',
+                'shopify_plan_id' => 'BASIC_PLAN',
             ],
             [
                 'id' => 2,
