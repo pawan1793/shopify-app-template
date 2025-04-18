@@ -6,8 +6,54 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Session;
+
 class AuthController extends Controller
 {
+    /**
+     * Show the login form.
+     */
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    /**
+     * Handle a login request to the application.
+     */
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('dashboard'));
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
+    }
+
+    /**
+     * Log the user out of the application.
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+
+    /**
+     * Authenticate a user via API.
+     */
     public function authenticate(Request $request)
     {
         // Validate shop and id from Shopify session
@@ -42,10 +88,11 @@ class AuthController extends Controller
         ]);
     }
 
-   
+    /**
+     * Get the authenticated user.
+     */
     public function user(Request $request)
     {
-
         \Log::info($request->all());
         // Check if the user is authenticated using Sanctum
         if ($user = $request->user()) {

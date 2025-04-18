@@ -17,5 +17,8 @@ class DatabaseSeeder extends Seeder
         
         // Seed products for users
         $this->call(ProductSeeder::class);
+        
+        // Seed admin user
+        $this->call(AdminSeeder::class);
     }
 }

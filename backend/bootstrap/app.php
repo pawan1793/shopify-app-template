@@ -12,7 +12,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Register the admin middleware
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\AdminAuth::class,
+        ]);
+        
+        // Register the impersonation middleware in the global middleware stack
+        $middleware->append(\App\Http\Middleware\ImpersonationMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
